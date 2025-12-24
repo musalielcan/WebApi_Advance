@@ -31,7 +31,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Product not found"
+                    Message = "Məhsul tapılmadı"
                 });
             }
             return StatusCode((int)HttpStatusCode.OK, products);
@@ -48,7 +48,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Product not found"
+                    Message = "Məhsul tapılmadı"
                 });
             }
             return StatusCode((int)HttpStatusCode.OK, dto);
@@ -73,7 +73,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Product not found"
+                    Message = "Məhsul tapılmadı"
                 });
             }
             _mapper.Map(dto, product);
@@ -91,7 +91,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Product not found"
+                    Message = "Məhsul tapılmadı"
                 });
             }
             _context.Products.Remove(product);

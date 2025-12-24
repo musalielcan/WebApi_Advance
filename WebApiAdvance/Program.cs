@@ -1,7 +1,11 @@
 
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using WebApiAdvance.DAL.EFCore;
+using WebApiAdvance.Helpers;
+using WebApiAdvance.Validators.Products;
 
 namespace WebApiAdvance
 {
@@ -20,13 +24,29 @@ namespace WebApiAdvance
             {
                 cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies());
             });
+            builder.Services
+    .AddControllers()
+    .AddFluentValidation(fv =>
+    {
+        fv.AutomaticValidationEnabled = false;
+    });
 
-            builder.Services.AddControllers();
+            builder.Services.AddScoped<IProductUniqueChecker, ProductUniqueChecker>();
+
+            builder.Services.AddControllers().AddFluentValidation(opt =>
+            {
+                opt.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+                opt.ImplicitlyValidateChildProperties = true;
+                opt.ImplicitlyValidateRootCollectionElements = true;
+            });
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

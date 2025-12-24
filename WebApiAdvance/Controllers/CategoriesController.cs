@@ -32,7 +32,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Category not found"
+                    Message = "Kateqoriya tapılmadı"
                 });
             }
             return StatusCode((int)HttpStatusCode.OK, categories);
@@ -48,7 +48,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Category not found"
+                    Message = "Kateqoriya tapılmadı"
                 });
             }
             return StatusCode((int)HttpStatusCode.OK, dto);
@@ -73,7 +73,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Category not found"
+                    Message = "Kateqoriya tapılmadı"
                 });
 
             }
@@ -92,7 +92,7 @@ namespace WebApiAdvance.Controllers
                 return BadRequest(new
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Category not found"
+                    Message = "Kateqoriya tapılmadı"
                 });
             }
             _context.Categories.Remove(category);
