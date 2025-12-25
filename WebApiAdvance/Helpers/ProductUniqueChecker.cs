@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using WebApiAdvance.DAL.EFCore;
 
 namespace WebApiAdvance.Helpers
 {
-    public class ProductUniqueChecker : IProductUniqueChecker
+    public class ProductUniqueChecker: IProductUniqueChecker
     {
         private readonly ApiDbContext _context;
 
@@ -13,16 +12,14 @@ namespace WebApiAdvance.Helpers
             _context = context;
         }
 
-        public async Task<bool> IsSkuUniqueAsync(string sku, Guid? productId = null)
+        public bool BeUniqueSKUSync(string sku)
         {
-            return !await _context.Products.AnyAsync(p =>
-                p.SKU == sku && (!productId.HasValue || p.Id != productId));
+            return !_context.Products.AnyAsync(p => p.SKU == sku).GetAwaiter().GetResult();
         }
 
-        public async Task<bool> IsBarcodeUniqueAsync(string barcode, Guid? productId = null)
+        public bool BeUniqueBarcodeSync(string barcode)
         {
-            return !await _context.Products.AnyAsync(p =>
-                p.Barcode == barcode && (!productId.HasValue || p.Id != productId));
+            return !_context.Products.AnyAsync(p => p.Barcode == barcode).GetAwaiter().GetResult();
         }
     }
 }

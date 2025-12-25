@@ -8,7 +8,7 @@ namespace WebApiAdvance.Validators.Products
 {
     public class UpdateProductDtoValidators:AbstractValidator<UpdateProductDto>
     {
-        public UpdateProductDtoValidators()
+        public UpdateProductDtoValidators(IProductUniqueChecker checker)
         {
             RuleFor(c => c.Name)
                 .NotEmpty().WithMessage("Ad boş ola bilməz.")
@@ -37,12 +37,14 @@ namespace WebApiAdvance.Validators.Products
                 .NotEmpty().WithMessage("SKU boş ola bilməz.")
                 .MinimumLength(3).WithMessage("SKU ən azı 3 simvoldan ibarət olmalıdır.")
                 .MaximumLength(20).WithMessage("SKU 20 simvoldan çox olmamalıdır.")
-                .Matches(@"^[A-Z0-9\-]+$").WithMessage("SKU-da yalnız böyük hərflər, rəqəmlər və defis olmalıdır.");
-            
+                .Matches(@"^[A-Z0-9\-]+$").WithMessage("SKU-da yalnız böyük hərflər, rəqəmlər və defis olmalıdır.")
+                .Must(checker.BeUniqueSKUSync).WithMessage("Bu SKU artıq mövcuddur");
+
             RuleFor(c => c.Barcode)
                 .NotEmpty().WithMessage("Barkod boş ola bilməz.")
                 .Matches(@"^\d+$").WithMessage("Barkod yalnız rəqəm simvollarından ibarət olmalıdır.")
-                .Must(b => b.Length == 8 || b.Length == 12 || b.Length == 13).WithMessage("Barkod 8, 12 və ya 13 rəqəmdən ibarət olmalıdır.");
+                .Must(b => b.Length == 8 || b.Length == 12 || b.Length == 13).WithMessage("Barkod 8, 12 və ya 13 rəqəmdən ibarət olmalıdır.")
+                .Must(checker.BeUniqueBarcodeSync).WithMessage("Bu barkod artıq mövcuddur.");
         }
     }
 }

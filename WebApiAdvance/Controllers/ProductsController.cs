@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using WebApiAdvance.DAL.EFCore;
+using WebApiAdvance.Entities;
 using WebApiAdvance.Entities.DTOs.Products;
 
 namespace WebApiAdvance.Controllers
@@ -57,7 +59,7 @@ namespace WebApiAdvance.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductDto dto)
         {
-            var product = _mapper.Map<Entities.Product>(dto);
+            var product = _mapper.Map<Product>(dto);
             product.CreatedAt= DateTime.UtcNow;
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();

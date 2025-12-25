@@ -2,7 +2,7 @@
 {
     public interface IProductUniqueChecker
     {
-        Task<bool> IsSkuUniqueAsync(string sku, Guid? productId = null);
-        Task<bool> IsBarcodeUniqueAsync(string barcode, Guid? productId = null);
+        public bool BeUniqueSKUSync(string sku);
+        public bool BeUniqueBarcodeSync(string barcode);
     }
 }
