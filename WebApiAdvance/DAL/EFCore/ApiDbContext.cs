@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using WebApiAdvance.Entities;
+using WebApiAdvance.Entities.Auth;
 
 namespace WebApiAdvance.DAL.EFCore
 {
-    public class ApiDbContext:DbContext
+    public class ApiDbContext:IdentityDbContext<AppUser<Guid>>
     {
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         {
@@ -12,6 +14,7 @@ namespace WebApiAdvance.DAL.EFCore
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Product> Products { get; set; }

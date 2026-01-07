@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using WebApiAdvance.DAL.EFCore;
+using WebApiAdvance.DAL.Repositories.Abstract;
+using WebApiAdvance.DAL.UnitOfWork.Abstract;
 using WebApiAdvance.Entities;
 using WebApiAdvance.Entities.DTOs.Categories;
 
@@ -13,21 +15,20 @@ namespace WebApiAdvance.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ApiDbContext _context;
         IMapper _mapper;
-        public CategoriesController(ApiDbContext context, IMapper mapper)
+        private readonly IUnitOfWork _unitOfWork;
+        public CategoriesController(IMapper mapper, IUnitOfWork unitOfWork)
         {
-            _context = context;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<GetCategoryDto>>> GetAllCategories()
+        public async Task<ActionResult<List<GetCategoryDto>>> GetAllCategories(int page=1, int size = 15)
         {
-            var categories = await _context.Categories
-                .Select(c => _mapper.Map<GetCategoryDto>(c))
-                .ToListAsync();
-            if (categories == null || categories.Count == 0)
+            var categories = await _unitOfWork.CategoryRepository.GetAllPaginatedAsync(page, size, null);
+            var result = _mapper.Map<List<GetCategoryDto>>(categories);
+            if (result == null || result.Count == 0)
             {
                 return BadRequest(new
                 {
@@ -35,13 +36,13 @@ namespace WebApiAdvance.Controllers
                     Message = "Kateqoriya tapılmadı"
                 });
             }
-            return StatusCode((int)HttpStatusCode.OK, categories);
+            return StatusCode((int)HttpStatusCode.OK, result);
         }
 
         [HttpGet]
         public async Task<ActionResult<GetCategoryDto>> GetCategoryById(Guid id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _unitOfWork.CategoryRepository.Get(c => c.Id == id);
             var dto = _mapper.Map<GetCategoryDto>(category);
             if (dto == null)
             {
@@ -59,15 +60,15 @@ namespace WebApiAdvance.Controllers
         {
             var category = _mapper.Map<Category>(dto);
             category.CreatedAt = DateTime.UtcNow;
-            await _context.Categories.AddAsync(category);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CategoryRepository.AddAsync(category);
+            await _unitOfWork.SaveAsync();
             return Ok();
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateCategory(Guid id, UpdateCategoryDto dto)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _unitOfWork.CategoryRepository.Get(c => c.Id == id);
             if (category == null)
             {
                 return BadRequest(new
@@ -79,14 +80,14 @@ namespace WebApiAdvance.Controllers
             }
             _mapper.Map(dto, category);
             category.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+            await _unitOfWork.SaveAsync();
             return Ok();
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _unitOfWork.CategoryRepository.Get(c => c.Id == id);
             if (category == null)
             {
                 return BadRequest(new
@@ -95,8 +96,8 @@ namespace WebApiAdvance.Controllers
                     Message = "Kateqoriya tapılmadı"
                 });
             }
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            _unitOfWork.CategoryRepository.Delete(category.Id);
+            await _unitOfWork.SaveAsync();
             return Ok();
         }
     }
